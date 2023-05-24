@@ -31,7 +31,7 @@ const updatestart = async () =>{
     const marketStatus = await datagather.updatedb();
     console.log('updated DB');
     console.log(marketStatus)
-    serverstatus='MARKET ON & UPDATING DATA at 7sec interval';
+    serverstatus='MARKET ON & UPDATING DATA at 60sec interval';
     if(marketStatus.toUpperCase()=="CLOSED"){
         serverstatus=`MARKET has been closed at ${new Date()}`;
         clearIntervalAsync(update0);
@@ -43,7 +43,7 @@ const updatestart = async () =>{
 let rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [0,1,2,3,4]
 rule.hour = [10];
-rule.minute = [0];
+rule.minute = [1];
 rule.tz = 'Asia/Dhaka';
 const job2 = schedule.scheduleJob( rule , async function(triggerDate){
     console.log(`Today is ${triggerDate}`);
