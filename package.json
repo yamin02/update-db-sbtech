@@ -11,7 +11,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "express": "^4.17.1",
-    "google-news-json": "^2.0.4",
+    "google-news-json": "^1.0.3",
     "jsdom": "^16.6.0",
     "link-preview-js": "^2.1.8",
     "mongoose": "^5.13.3",

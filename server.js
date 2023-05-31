@@ -19,7 +19,7 @@ mongoose.connect('mongodb+srv://yamin02:chandanpura@sharebazar.z3hlw.mongodb.net
 });
 
 app.get('/', function(req, res) {
-    res.send(serverstatus)
+    res.send(`<h2>${serverstatus}</h2>`)
 });
 
 app.listen(process.env.PORT||3000,()=>{
@@ -42,8 +42,8 @@ const updatestart = async () =>{
 
 let rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [0,1,2,3,4]
-rule.hour = [10];
-rule.minute = [1];
+rule.hour = [10,11];
+rule.minute = [1,33,35];
 rule.tz = 'Asia/Dhaka';
 const job2 = schedule.scheduleJob( rule , async function(triggerDate){
     console.log(`Today is ${triggerDate}`);
