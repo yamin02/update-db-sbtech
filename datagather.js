@@ -105,7 +105,7 @@ const dataDse = async (charttrue) =>  {
     console.log('The data from DSE is collected now');
     return {'arr':arr , 'marketStatus':marketstatus} 
   }
-dataDse();
+// dataDse();
 module.exports.dataDse = dataDse ;
 
 

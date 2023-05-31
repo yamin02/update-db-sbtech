@@ -42,8 +42,8 @@ const updatestart = async () =>{
 
 let rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [0,1,2,3,4]
-rule.hour = [10,11,12];
-rule.minute = [1,33,35,50];
+rule.hour = [10,11,19];
+rule.minute = [1,25,33];
 rule.tz = 'Asia/Dhaka';
 const job2 = schedule.scheduleJob( rule , async function(triggerDate){
     console.log(`Today is ${triggerDate}`);
@@ -62,7 +62,7 @@ const job2 = schedule.scheduleJob( rule , async function(triggerDate){
             clearIntervalAsync(checkopen)
         }
     },4000)
-    console.log("Started the Stock market")
+    console.log("Started checking if the Stock market open")
 });
 
 let rule2 = new schedule.RecurrenceRule();
