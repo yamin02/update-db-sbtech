@@ -57,7 +57,7 @@ const chartdata =  async () =>  {
 module.exports.chartdata = chartdata
 
 
-
+//this is the data for every share 
 const dataDse = async (charttrue) =>  {
     if(charttrue){
         var chartdat = await chartdata();
@@ -101,7 +101,8 @@ const dataDse = async (charttrue) =>  {
         // jsonAll[`${json.name}`] = json;
         arr.push(json)
     }
-    console.log(arr)
+    // console.log(arr)
+    console.log('The data from DSE is collected now');
     return {'arr':arr , 'marketStatus':marketstatus} 
   }
 dataDse();

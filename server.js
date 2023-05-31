@@ -42,8 +42,8 @@ const updatestart = async () =>{
 
 let rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [0,1,2,3,4]
-rule.hour = [10,11];
-rule.minute = [1,33,35];
+rule.hour = [10,11,12];
+rule.minute = [1,33,35,50];
 rule.tz = 'Asia/Dhaka';
 const job2 = schedule.scheduleJob( rule , async function(triggerDate){
     console.log(`Today is ${triggerDate}`);
