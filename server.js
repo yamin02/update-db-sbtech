@@ -43,7 +43,7 @@ const updatestart = async () =>{
 let rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [0,1,2,3,4]
 rule.hour = [10,11,19];
-rule.minute = [1,25,33];
+rule.minute = [1,23,33];
 rule.tz = 'Asia/Dhaka';
 const job2 = schedule.scheduleJob( rule , async function(triggerDate){
     console.log(`Today is ${triggerDate}`);
@@ -68,11 +68,12 @@ const job2 = schedule.scheduleJob( rule , async function(triggerDate){
 let rule2 = new schedule.RecurrenceRule();
 rule2.dayOfWeek = [0,1,2,3,4]
 rule2.hour = [14,16,18,20,21];
-rule2.minute = [7];
+rule2.minute = [40,50,59];
 rule2.tz = 'Asia/Dhaka';
 const jobFinalUpdate = schedule.scheduleJob( rule2 , async function(triggerDate){
     await datagather.finalupdate();
     serverstatus = `Final updated the database with chartdata & price :  ${triggerDate}`
+    
     console.log(`Final Update of Chartdata and All stocks done at : ${triggerDate}`)
 });
 

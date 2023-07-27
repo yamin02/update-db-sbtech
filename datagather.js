@@ -63,6 +63,7 @@ const dataDse = async (charttrue) =>  {
         var chartdat = await chartdata();
     }
     var url = `https://www.dse.com.bd/latest_share_price_scroll_l.php?timestamp=${new Date().getSeconds()*(Math.floor(Math.random()*100))}`
+    console.log(url)
     const response = await axios({
             url : url ,
             method : 'GET',
@@ -175,61 +176,91 @@ const finalupdate = async() =>{
 }
 module.exports.finalupdate = finalupdate ;
 
+const stocknameArray = require('./stockname');
 
+// getfundamnetal('all') or getfundamnetal('ROBI,GP,AIL')
+const getfundamental = async (nameofStock) =>{
+    var stockname ;
+    if(nameofStock == 'all'){
+         stockname = stocknameArray.allnames ;
+    }else{
+        stockname = nameofStock.split(',') ;
 
-const getfundamental = async () =>{
-    const stockname = await model.stockmodel.find({_id:{ $in : [ 41, 55 ] } },{name:1,_id:0}).sort({name:1});
+    } 
+    // const stockname = await model.stockmodel.find({_id:{ $in : [ 41, 55 ] } },{name:1,_id:0}).sort({name:1});
     var fundamentals = []
+    var allSector = {};
     for(var i of stockname){
         try{
-            console.log(i.name)
+            console.log(i)
             const response = await axios({
-                    url : `https://www.dsebd.org/displayCompany.php?name=${i.name}` ,
+                    url : `https://www.dsebd.org/displayCompany.php?name=${i}` ,
                 method : 'GET',
             }); 
             const dom = new JSDOM(response.data);
             var table = dom.window.document.querySelectorAll('.table')[8].querySelectorAll('.shrink');
             var length = table.length
+            var table11 = dom.window.document.querySelectorAll('.table')[11];
+            var table4 = dom.window.document.querySelectorAll('.table')[4];
+            var holding = [] ;
+            table11.querySelectorAll('td table')[2].querySelectorAll('tr td')
+                .forEach(i=> holding.push( parseFloat(i.textContent.split(':')[1]) ))
             if(length<2){continue;};
             var json = {
-                _id : i.name,
-                '2019_eps':  parseFloat(table[length-2].children[4].textContent) ,
-                '2020_eps' : parseFloat(table[length-1].children[4].textContent),
-                '2019_nav' : parseFloat(table[length-2].children[4].textContent),
-                '2020_nav':  parseFloat(table[length-1].children[4].textContent) ,
-                '2019_profit' : parseFloat(table[length-2].children[4].textContent),
-                '2020_profit' : parseFloat(table[length-1].children[4].textContent),
+                _id : i,
+                '2021_eps':  parseFloat(table[length-2].children[4].textContent) ,
+                '2022_eps' : parseFloat(table[length-1].children[4].textContent),
+                '2021_nav' : parseFloat(table[length-2].children[7].textContent),
+                '2022_nav':  parseFloat(table[length-1].children[7].textContent) ,
+                '2021_profit' : parseFloat(table[length-2].children[10].textContent),
+                '2022_profit' : parseFloat(table[length-1].children[10].textContent),
                 'totalstocks' : parseInt(dom.window.document.querySelectorAll('.alt')[5].children[1].textContent.replace(/,/g,"")),
-                'currentprice' : parseFloat(dom.window.document.querySelectorAll('#company td')[0].textContent.replace(/,/g,""))
+                'currentprice' : parseFloat(dom.window.document.querySelectorAll('#company td')[0].textContent.replace(/,/g,"")),
+                'shareHoldingPercentage' :     holding ,
+                'sector' : dom.window.document.querySelectorAll('.table')[2].querySelectorAll('tr td')[7].textContent,
+                'listingYear' :     table11.querySelectorAll('tr td')[1].textContent,
+                'MarketCategory' : table11.querySelectorAll('.alt td')[1].textContent,
+                'cashDivident' :          table4.querySelectorAll('tr td')[0].textContent,
+                'stockDivident' :          table4.querySelectorAll('tr td')[1].textContent,
+                'Year Ending' :          table4.querySelectorAll('tr td')[3].textContent ,
+                'OneYearMovingRange' : dom.window.document.querySelectorAll('#company td')[7].textContent,
+            
             } ;
-            var ROE = (json['2020_profit']*1000000*100/(json['2020_nav']*json['totalstocks'])).toFixed(2).replace(/NaN/g,0);
-            var EarnGrowth = ((json['2020_eps']/json['2019_eps']-1)*100).toFixed(2).replace(/NaN/g,0) ;
-            var PE = (json['currentprice'] / json['2020_eps']).toFixed(2).replace(/NaN/g,0).replace(/-/g,"100") ;
+            var ROE = (json['2022_profit']*1000000*100/(json['2022_nav']*json['totalstocks'])).toFixed(2).replace(/NaN/g,0);
+            var EarnGrowth = ((json['2022_eps']/json['2021_eps']-1)*100).toFixed(2).replace(/NaN/g,0) ;
+            var PE = (json['currentprice'] / json['2021_eps']).toFixed(2).replace(/NaN/g,0).replace(/-/g,"100") ;
             var sector = dom.window.document.getElementsByClassName('alt')[5].children[3].textContent
 
-            console.log(json)
-            // fundamentals.push(
-            var p = {
-                _id : i.name,
-                ROE :  ROE ,
-                EarnGrowth : EarnGrowth ,
-                PE: PE ,
-                Sector : sector 
-            }
-            // fs.appendFile('data.txt', "\n" + JSON.stringify(p)+",",(err)=>{
-            //     console.log("written in file ");
-            //     if(err) throw err ; 
-            // })
-             console.log(p)
+            //console.log(json)
+            
+            json['ROE'] =  ROE ;
+            json['EarnGrowth'] = EarnGrowth ;
+            json['PE'] = PE  ;
+            json['Sector'] = sector ; 
+            
+            if(Array.isArray(allSector[`${sector}`]) ){
+                allSector[`${sector}`].push(json) ;
+            } else {
+                allSector[`${sector}`] = [] ;
+                allSector[`${sector}`].push(json) ;
+
+            } 
+           // console.log(json)
         }catch(err){
             console.log("There something wrong");
         }
     }
-// await model.analysis1.insertMany(fundamentals);
 
+    fs.appendFile('data.json', JSON.stringify(allSector),(err)=>{
+        console.log("written in file ");
+        if(err) throw err ; 
+    })
+// await model.analysis1.insertMany(fundamentals);
 }
+
 module.exports.getfundamental = getfundamental ;
-// getfundamental();
+// getfundamental('ROBI,GP,AIL');
+//getfundamental('all')
 
 
 //const data = require('./others/data.js')
@@ -273,5 +304,11 @@ const getfundamental_A = () =>{
     })
 }
 //getfundamental_A();
+
+
+
+
+
+
 
 
